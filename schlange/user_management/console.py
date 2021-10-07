@@ -16,19 +16,9 @@ class Console:
                 "save to file": None,
                 "load from file": None,
                 "show user list": None,
+                "change user": None,
                 "quit": None,
             },
-            # "user_list": {
-            #     "help": None,
-            #     "change user [index]": None,
-            # },
-            # "user_change": {
-            #     "help": None,
-            #     "change name": None,
-            #     "change email": None,
-            #     "change birthdate": None,
-            #     "change most loved function": None,
-            # },
         }
 
         self.help_infos: Dict = {
@@ -39,11 +29,7 @@ class Console:
             "save to file": "- With this command you can save all users to a file",
             "load from file": "- With this command you can load users from a file",
             "show user list": "- Shows all users",
-            "change user [index]": "- You can hereby choose a user you want to change",
-            "change name": "- You can change the name of the selected user",
-            "change email": "- You can change the email of the selected user",
-            "change birthdate": "- You can change the birthdate of the selected user",
-            "change most loved function": "- You can change the most loved function of the user",
+            "change user": "- You can hereby choose a user you want to change",
         }
 
         # self.choices["user_list"]["help"] = self.print_help('user_list')
@@ -54,6 +40,7 @@ class Console:
         self.choices["main"]["save to file"] = self.save_users
         self.choices["main"]["load from file"] = self.load_users
         self.choices["main"]["show user list"] = self.show_user_list
+        self.choices["main"]["change user"] = self.change_user
 
         self.users = []
         pass
@@ -70,38 +57,87 @@ class Console:
         pass
 
     def print_help(self, level='main') -> None:
-        print('We are here to help!\n' + "\n".join((choice.ljust(28, '.')+" " +
+        print('----------\nWe are here to help!\n\n' + "\n".join((choice.ljust(28, '.')+" " +
               self.help_infos[choice]) for choice in self.choices[level]))
         pass
 
     def add_user(self) -> None:
-        print('Please provide the information!')
+        print('---------\nPlease provide the information!\n')
         self.users.append(User(input('Enter the name: '), input(
             'Enter email: '), input('Enter birthdate: ')))
-        print(f'\nAdded user:\n{repr(self.users[-1])}')
+        print(f'\nAdded user:\n{repr(self.users[-1])}\n')
         pass
 
     def delete_user(self) -> None:
         try:
-            self.users.pop(int(input('Enter user index: ')))
-            print('Successfully deleted user')
+            self.show_user_list()
+            print('-------')
+            del_index = int(
+                input('Enter the index of the user you want to delete: '))-1
+            self.users.pop(del_index)
+            print('\n ~ Successfully deleted user ~\n')
         except IndexError:
-            print('Sorry that index doesn\'t seem to exist')
+            print('\n ~ Sorry that index doesn\'t seem to exist ~\n')
         pass
 
     def save_users(self) -> None:
+
+        if len(self.users) == 0:
+            print('\n ~ No users to save… ~\n')
+            return
+
         with open('saved.users', 'wb') as f:
             pickle.dump(self.users, f)
+        print('\n ~ Saved users ~\n')
         pass
 
     def load_users(self) -> None:
         with open('saved.users', 'rb') as f:
             self.users = pickle.load(f)
+        print('\n ~ Loaded users ~\n')
         pass
 
     def show_user_list(self) -> None:
+
+        if len(self.users) == 0:
+            print('\n ~ Nothing to show here… ~\n')
+            return
+
         print()
-        [print(repr(x)+'\n') for x in self.users]
+        [print(f'{self.users.index(x)+1}. - '+repr(x)+'\n')
+         for x in self.users]
+        pass
+
+    def change_user(self) -> None:
+        self.show_user_list()
+        print('-------')
+        chng_index = int(input('Which user do you want to change: '))-1
+
+        try:
+            tmp = self.users[chng_index]
+        except IndexError:
+            print('\n ~ Sorry that index doesn\'t seem to exist ~\n')
+            return
+
+        name = input(
+            'Enter name [in case you don\'t want to change it press ENTER]: ')
+        if name == '':
+            name = self.users[chng_index].name
+
+        email = input(
+            'Enter email [in case you don\'t want to change it press ENTER]: ')
+        if email == '':
+            email = self.users[chng_index].email
+
+        birthdate = input(
+            'Enter birthdate [in case you don\'t want to change it press ENTER]: ')
+        if birthdate == '':
+            birthdate = self.users[chng_index].birth_date
+
+        self.users.pop(chng_index)
+        self.users.insert(chng_index, User(name, email, birthdate))
+        print(
+            f'\n ~ Succesfully altered the user! ~\nUser is now: {self.users[chng_index]}\n')
         pass
 
     def run(self):

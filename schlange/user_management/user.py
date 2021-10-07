@@ -9,6 +9,6 @@ class User:
         pass
 
     def __repr__(self) -> str:
-        return f'Username: {self.name}\nEmail: {self.email}\nBirth Date: {self.birth_date}'
+        return f'{self.name} ; email: {self.email} ; born: {self.birth_date}'
 
     pass
