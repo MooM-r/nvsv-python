@@ -156,6 +156,7 @@ class Console:
                 break
 
             if not user_input in self.choices["main"].keys():
+                print('\n ~ Ey Oi don\'t know that one yet. ~\n')
                 continue
 
             self.choices["main"][user_input]()
