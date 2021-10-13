@@ -92,9 +92,12 @@ class Console:
         pass
 
     def load_users(self) -> None:
-        with open('saved.users', 'rb') as f:
-            self.users = pickle.load(f)
-        print('\n ~ Loaded users ~\n')
+        try:
+            with open('saved.users', 'rb') as f:
+                self.users = pickle.load(f)
+            print('\n ~ Loaded users ~\n')
+        except Exception:
+            print('\n ~ There is no file to load from ~\n')
         pass
 
     def show_user_list(self) -> None:
